@@ -22,6 +22,8 @@ import com.udacity.vehicles.domain.manufacturer.Manufacturer;
 import com.udacity.vehicles.service.CarService;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 
 import org.junit.Before;
@@ -82,11 +84,11 @@ public class CarControllerTest {
   public void createCar() throws Exception {
     Car car = getCar();
     mvc.perform(
-        post(new URI("/cars"))
-            .content(json.write(car).getJson())
-            .contentType(MediaType.APPLICATION_JSON_UTF8)
-            .accept(MediaType.APPLICATION_JSON_UTF8))
-        .andExpect(status().isCreated());
+      post(new URI("/cars"))
+        .content(json.write(car).getJson())
+        .contentType(MediaType.APPLICATION_JSON_UTF8)
+        .accept(MediaType.APPLICATION_JSON_UTF8))
+      .andExpect(status().isCreated());
   }
 
   /**
@@ -102,9 +104,9 @@ public class CarControllerTest {
      *   below (the vehicle will be the first in the list).
      */
     mvc.perform(get(new URI("/cars"))
-        .contentType(MediaType.APPLICATION_JSON_UTF8))
-        .andDo(print())
-        .andExpect(status().isOk());
+      .contentType(MediaType.APPLICATION_JSON_UTF8))
+      .andDo(print())
+      .andExpect(status().isOk());
   }
 
   /**
@@ -163,6 +165,9 @@ public class CarControllerTest {
     details.setNumberOfDoors(4);
     car.setDetails(details);
     car.setCondition(Condition.USED);
+    car.setCreatedAt(LocalDateTime.now());
+    car.setModifiedAt(LocalDateTime.now());
+    car.setId(1L);
     return car;
   }
 }

@@ -126,18 +126,18 @@ $ java -jar target/[package-name]-0.0.1-SNAPSHOT.jar
 
 ### Pricing Service Rubric
 
-- [ ] The Pricing Service API is converted to a microservice with Spring Data REST, without the need to explicitly include code for the Controller or Service.
-- [ ] A Eureka server is implemented and running on port 8761. The Pricing Service is registered on that server and is named pricing-service.
+- [x] The Pricing Service API is converted to a microservice with Spring Data REST, without the need to explicitly include code for the Controller or Service.
+- [x] A Eureka server is implemented and running on port 8761. The Pricing Service is registered on that server and is named pricing-service.
 - [ ] The Vehicles API should be able to use the Eureka server to call the pricing service.
 - [ ] Within the test folder, at least one additional test has been implemented outside of contextLoads() for the overall Pricing Service Application.
 
 ### Vehicle Service Rubric
 
-- [ ] The Vehicles API is able to create a new vehicle based on input from the user with a POST request.
-- [ ] The Vehicles API can receive GET requests from a user, and read back either a list of all existing vehicles, or the data for a single vehicle.
-- [ ] The Vehicles API can update an existing vehicle through input from the user.
-- [ ] The Vehicles API can delete an existing vehicle when requested by the user.
-- [ ] The Vehicles API is able to consume information from the separate Boogle Maps and Pricing Service APIs, and return that information as part of the vehicle information for a single vehicle.
+- [x] The Vehicles API is able to create a new vehicle based on input from the user with a POST request.
+- [x] The Vehicles API can receive GET requests from a user, and read back either a list of all existing vehicles, or the data for a single vehicle.
+- [x] The Vehicles API can update an existing vehicle through input from the user.
+- [x] The Vehicles API can delete an existing vehicle when requested by the user.
+- [x] The Vehicles API is able to consume information from the separate Boogle Maps and Pricing Service APIs, and return that information as part of the vehicle information for a single vehicle.
   - Note: Boogle Maps will assign a new random address each time a query is called, so don't fret if it changes between queries.
 
 ### Testing Rubric
