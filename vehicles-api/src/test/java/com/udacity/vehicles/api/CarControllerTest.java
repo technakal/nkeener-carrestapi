@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +39,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 /**
  * Implements testing of the CarController class.
@@ -98,15 +101,11 @@ public class CarControllerTest {
    */
   @Test
   public void listCars() throws Exception {
-    /**
-     * TODO: Add a test to check that the `get` method works by calling
-     *   the whole list of vehicles. This should utilize the car from `getCar()`
-     *   below (the vehicle will be the first in the list).
-     */
     mvc.perform(get(new URI("/cars"))
       .contentType(MediaType.APPLICATION_JSON_UTF8))
-      .andDo(print())
-      .andExpect(status().isOk());
+      .andExpect(status().isOk())
+      .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.carList[0].id").value("1"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.carList[0].details.model").value("Impala"));
   }
 
   /**
@@ -116,14 +115,11 @@ public class CarControllerTest {
    */
   @Test
   public void findCar() throws Exception {
-    /**
-     * TODO: Add a test to check that the `get` method works by calling
-     *   a vehicle by ID. This should utilize the car from `getCar()` below.
-     */
     mvc.perform(get(new URI("/cars/1"))
-        .contentType(MediaType.APPLICATION_JSON_UTF8))
-        .andDo(print())
-        .andExpect(status().isOk());
+      .contentType(MediaType.APPLICATION_JSON_UTF8))
+      .andExpect(status().isOk())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("1"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.details.model").value("Impala"));
   }
 
   /**
@@ -133,14 +129,10 @@ public class CarControllerTest {
    */
   @Test
   public void deleteCar() throws Exception {
-    /**
-     * TODO: Add a test to check whether a vehicle is appropriately deleted
-     *   when the `delete` method is called from the Car Controller. This
-     *   should utilize the car from `getCar()` below.
-     */
     mvc.perform(delete(new URI("/cars/1")))
-        .andDo(print())
         .andExpect(status().isNoContent());
+    mvc.perform(get("cars/1"))
+       .andExpect(status().isNotFound());
   }
 
   /**

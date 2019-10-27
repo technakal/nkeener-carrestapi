@@ -142,14 +142,14 @@ $ java -jar target/[package-name]-0.0.1-SNAPSHOT.jar
 
 ### Testing Rubric
 
-- [ ] Within the CarControllerTest.java file, the TODOs for tests of CRUD operations have been implemented.
+- [x] Within the CarControllerTest.java file, the TODOs for tests of CRUD operations have been implemented.
   - You are welcome to add additional tests beyond these as desired!
-- [ ] All necessary dependencies have been added to the relevant POM files, and the code is able to run both from tests and in launching the actual applications.
+- [x] All necessary dependencies have been added to the relevant POM files, and the code is able to run both from tests and in launching the actual applications.
 
 ### Documentation Rubric
 
-- [ ] API documentation for the Vehicles API is implemented using Swagger, and all related API queries are able to be run from there.
-- [ ] The documentation is available at http://localhost:8080/swagger-ui.html when the application is running.
+- [x] API documentation for the Vehicles API is implemented using Swagger, and all related API queries are able to be run from there.
+- [x] The documentation is available at http://localhost:8080/swagger-ui.html when the application is running.
   - Note: You are welcome to add Swagger API documentation for the other APIs, but it is not required.
 
 ### Extra Credit
