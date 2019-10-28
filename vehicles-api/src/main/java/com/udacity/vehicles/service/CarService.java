@@ -1,21 +1,14 @@
 package com.udacity.vehicles.service;
 
 import com.udacity.vehicles.client.maps.MapsClient;
-import com.udacity.vehicles.client.prices.Price;
 import com.udacity.vehicles.client.prices.PriceClient;
 import com.udacity.vehicles.domain.Location;
 import com.udacity.vehicles.domain.car.Car;
 import com.udacity.vehicles.domain.car.CarRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  * Implements the car service create, read, update or delete
@@ -91,6 +84,7 @@ public class CarService {
           .map(carToBeUpdated -> {
             carToBeUpdated.setDetails(car.getDetails());
             carToBeUpdated.setLocation(car.getLocation());
+            carToBeUpdated.setCondition(car.getCondition());
             return repository.save(carToBeUpdated);
           }).orElseThrow(CarNotFoundException::new);
     }

@@ -1,17 +1,5 @@
 package com.udacity.vehicles.api;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.udacity.vehicles.client.maps.MapsClient;
 import com.udacity.vehicles.client.prices.PriceClient;
 import com.udacity.vehicles.domain.Condition;
@@ -20,13 +8,6 @@ import com.udacity.vehicles.domain.car.Car;
 import com.udacity.vehicles.domain.car.Details;
 import com.udacity.vehicles.domain.manufacturer.Manufacturer;
 import com.udacity.vehicles.service.CarService;
-
-import java.net.URI;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collections;
-
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,8 +20,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.net.URI;
+import java.time.LocalDateTime;
+import java.util.Collections;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Implements testing of the CarController class.
@@ -71,11 +60,13 @@ public class CarControllerTest {
    */
   @Before
   public void setup() {
-    Car car = getCar();
-    car.setId(1L);
+    Car car = getCar("white", 1L, Condition.USED);
+    Car updatedCar = getCar("true blue", 2L, Condition.NEW);
+    updatedCar.setId(2L);
     given(carService.save(any())).willReturn(car);
-    given(carService.findById(any())).willReturn(car);
+    given(carService.findById(1L)).willReturn(car);
     given(carService.list()).willReturn(Collections.singletonList(car));
+    given(carService.findById(2L)).willReturn(updatedCar);
   }
 
   /**
@@ -85,13 +76,16 @@ public class CarControllerTest {
    */
   @Test
   public void createCar() throws Exception {
-    Car car = getCar();
+    Car car = getCar("white", 1L, Condition.USED);
     mvc.perform(
       post(new URI("/cars"))
         .content(json.write(car).getJson())
         .contentType(MediaType.APPLICATION_JSON_UTF8)
         .accept(MediaType.APPLICATION_JSON_UTF8))
-      .andExpect(status().isCreated());
+      .andExpect(status().isCreated())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.condition").value("USED"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.details.externalColor").value("white"));
   }
 
   /**
@@ -101,10 +95,11 @@ public class CarControllerTest {
    */
   @Test
   public void listCars() throws Exception {
-    mvc.perform(get(new URI("/cars"))
-      .contentType(MediaType.APPLICATION_JSON_UTF8))
+    mvc.perform(
+      get(new URI("/cars"))
+        .contentType(MediaType.APPLICATION_JSON_UTF8))
       .andExpect(status().isOk())
-      .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.carList[0].id").value("1"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.carList[0].id").value(1))
       .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.carList[0].details.model").value("Impala"));
   }
 
@@ -115,11 +110,30 @@ public class CarControllerTest {
    */
   @Test
   public void findCar() throws Exception {
-    mvc.perform(get(new URI("/cars/1"))
-      .contentType(MediaType.APPLICATION_JSON_UTF8))
+    mvc.perform(
+      get(new URI("/cars/1"))
+        .contentType(MediaType.APPLICATION_JSON_UTF8))
       .andExpect(status().isOk())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("1"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
       .andExpect(MockMvcResultMatchers.jsonPath("$.details.model").value("Impala"));
+  }
+
+  /**
+   * Tests the update process for a single car.
+   *
+   * @throws Exception if the update operation fails.
+   */
+  @Test
+  public void updateCar() throws Exception {
+    Car car = getCar("true blue", 2L, Condition.NEW);
+    mvc.perform(
+      put(new URI("/cars/2"))
+        .content(json.write(car).getJson())
+        .contentType(MediaType.APPLICATION_JSON_UTF8))
+      .andExpect(status().isOk())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(2))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.condition").value("NEW"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.details.externalColor").value("true blue"));
   }
 
   /**
@@ -140,7 +154,7 @@ public class CarControllerTest {
    *
    * @return an example Car object
    */
-  private Car getCar() {
+  private Car getCar(String color, Long id, Condition condition) {
     Car car = new Car();
     car.setLocation(new Location(40.730610, -73.935242));
     Details details = new Details();
@@ -148,7 +162,7 @@ public class CarControllerTest {
     details.setManufacturer(manufacturer);
     details.setModel("Impala");
     details.setMileage(32280);
-    details.setExternalColor("white");
+    details.setExternalColor(color);
     details.setBody("sedan");
     details.setEngine("3.6L V6");
     details.setFuelType("Gasoline");
@@ -156,10 +170,10 @@ public class CarControllerTest {
     details.setProductionYear(2018);
     details.setNumberOfDoors(4);
     car.setDetails(details);
-    car.setCondition(Condition.USED);
+    car.setCondition(condition);
     car.setCreatedAt(LocalDateTime.now());
     car.setModifiedAt(LocalDateTime.now());
-    car.setId(1L);
+    car.setId(id);
     return car;
   }
 }
